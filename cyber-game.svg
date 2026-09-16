@@ -1,92 +1,49 @@
-name: Update Cyber Game Stats
+name: Update Cyber Game
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
-
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  update:
+  build-game:
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Fetch GitHub statistics
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get GitHub Stats
         run: |
-
           USERNAME="tanjeem_817"
 
-          echo "Fetching GitHub data..."
+          FOLLOWERS=$(curl -s "https://api.github.com/users/$USERNAME" | jq -r '.followers // 0')
 
-          USER_DATA=$(curl -s \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            "https://api.github.com/users/$USERNAME")
+          STARS=$(curl -s "https://api.github.com/users/$USERNAME/repos?per_page=100" \
+            | jq '[.[].stargazers_count] | add // 0')
 
-          FOLLOWERS=$(echo "$USER_DATA" | jq '.followers')
+          echo "FOLLOWERS=$FOLLOWERS" >> $GITHUB_ENV
+          echo "STARS=$STARS" >> $GITHUB_ENV
 
-          echo "Followers: $FOLLOWERS"
-
-          REPOS=$(curl -s \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            "https://api.github.com/users/$USERNAME/repos?per_page=100")
-
-          STARS=$(echo "$REPOS" | jq '[.[].stargazers_count] | add // 0')
-
-          echo "Stars: $STARS"
-
-          # Profile views
-          VIEWS=$(curl -s \
-            "https://komarev.com/ghpvc/?username=$USERNAME&label=views&color=00ff88&style=flat" \
-            | grep -oE '[0-9]+</text>' \
-            | head -1 \
-            | grep -oE '[0-9]+' || true)
-
-          if [ -z "$VIEWS" ]; then
-            VIEWS="LIVE"
-          fi
-
-          echo "Views: $VIEWS"
-
-          # Save values
-          echo "FOLLOWERS=$FOLLOWERS" >> stats.env
-          echo "STARS=$STARS" >> stats.env
-          echo "VIEWS=$VIEWS" >> stats.env
-
-
-      - name: Update SVG
+      - name: Build SVG
         run: |
+          cp cyber-game-template.svg cyber-game.svg
 
-          source stats.env
+          sed -i "s/{{FOLLOWERS}}/${FOLLOWERS}/g" cyber-game.svg
+          sed -i "s/{{STARS}}/${STARS}/g" cyber-game.svg
 
-          sed -i \
-            -e "s/{{FOLLOWERS}}/$FOLLOWERS/g" \
-            -e "s/{{STARS}}/$STARS/g" \
-            -e "s/{{VIEWS}}/$VIEWS/g" \
-            cyber-game.svg
+          sed -i "s/{{VIEWS}}/LIVE/g" cyber-game.svg
 
-          echo "SVG updated."
-
-
-      - name: Commit updated game
+      - name: Commit Changes
         run: |
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add cyber-game.svg
 
-          git diff --cached --quiet || \
-            git commit -m "Update cyber game stats"
+          git diff --cached --quiet || git commit -m "Update cyber game stats"
 
           git push
