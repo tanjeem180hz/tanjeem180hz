@@ -1,378 +1,92 @@
-<svg width="1000" height="300" viewBox="0 0 1000 300"
-     xmlns="http://www.w3.org/2000/svg">
+name: Update Cyber Game Stats
 
-<rect width="1000" height="300" fill="#05080d"/>
+on:
+  schedule:
+    - cron: "*/30 * * * *"
 
-<!-- GRID -->
+  workflow_dispatch:
 
-<g opacity="0.22">
-  <path d="M0 50H1000M0 100H1000M0 150H1000M0 200H1000M0 250H1000"
-        stroke="#00ff88"/>
+permissions:
+  contents: write
 
-  <path d="
-  M50 0V300 M100 0V300 M150 0V300 M200 0V300
-  M250 0V300 M300 0V300 M350 0V300 M400 0V300
-  M450 0V300 M500 0V300 M550 0V300 M600 0V300
-  M650 0V300 M700 0V300 M750 0V300 M800 0V300
-  M850 0V300 M900 0V300 M950 0V300"
-  stroke="#00ff88"/>
-</g>
+jobs:
+  update:
+    runs-on: ubuntu-latest
 
+    steps:
 
-<!-- TITLE -->
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-<text x="500" y="38"
-      text-anchor="middle"
-      font-family="monospace"
-      font-size="23"
-      font-weight="bold"
-      fill="#00ff88">
+      - name: Fetch GitHub statistics
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
 
-  CYBER DEFENSE // ACTIVE
+          USERNAME="tanjeem_817"
 
-  <animate
-      attributeName="opacity"
-      values="1;0.45;1"
-      dur="2s"
-      repeatCount="indefinite"/>
+          echo "Fetching GitHub data..."
 
-</text>
+          USER_DATA=$(curl -s \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/users/$USERNAME")
 
+          FOLLOWERS=$(echo "$USER_DATA" | jq '.followers')
 
-<!-- ================= PLAYER ================= -->
+          echo "Followers: $FOLLOWERS"
 
-<g>
+          REPOS=$(curl -s \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/users/$USERNAME/repos?per_page=100")
 
-  <rect x="465" y="235"
-        width="70"
-        height="25"
-        rx="5"
-        fill="#00ff88"/>
+          STARS=$(echo "$REPOS" | jq '[.[].stargazers_count] | add // 0')
 
-  <polygon points="500,205 470,235 530,235"
-           fill="#00ff88"/>
+          echo "Stars: $STARS"
 
-  <animateTransform
-      attributeName="transform"
-      type="translate"
-      values="0 0;40 0;-40 0;0 0"
-      dur="4s"
-      repeatCount="indefinite"/>
+          # Profile views
+          VIEWS=$(curl -s \
+            "https://komarev.com/ghpvc/?username=$USERNAME&label=views&color=00ff88&style=flat" \
+            | grep -oE '[0-9]+</text>' \
+            | head -1 \
+            | grep -oE '[0-9]+' || true)
 
-</g>
+          if [ -z "$VIEWS" ]; then
+            VIEWS="LIVE"
+          fi
 
+          echo "Views: $VIEWS"
 
-<!-- ================= ENEMY 1 ================= -->
+          # Save values
+          echo "FOLLOWERS=$FOLLOWERS" >> stats.env
+          echo "STARS=$STARS" >> stats.env
+          echo "VIEWS=$VIEWS" >> stats.env
 
-<g fill="#ff3158">
 
-  <rect x="150" y="70"
-        width="35"
-        height="35"
-        rx="5">
+      - name: Update SVG
+        run: |
 
-    <animate
-        attributeName="y"
-        values="70;220;70"
-        dur="3s"
-        repeatCount="indefinite"/>
+          source stats.env
 
-  </rect>
+          sed -i \
+            -e "s/{{FOLLOWERS}}/$FOLLOWERS/g" \
+            -e "s/{{STARS}}/$STARS/g" \
+            -e "s/{{VIEWS}}/$VIEWS/g" \
+            cyber-game.svg
 
-  <text x="167"
-        y="94"
-        text-anchor="middle"
-        font-family="monospace"
-        font-size="18"
-        fill="#05080d">
+          echo "SVG updated."
 
-    X
 
-  </text>
+      - name: Commit updated game
+        run: |
 
-  <animateTransform
-      attributeName="transform"
-      type="translate"
-      values="0 0;650 0;0 0"
-      dur="5s"
-      repeatCount="indefinite"/>
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-</g>
+          git add cyber-game.svg
 
+          git diff --cached --quiet || \
+            git commit -m "Update cyber game stats"
 
-<!-- ================= ENEMY 2 ================= -->
-
-<g fill="#ff3158">
-
-  <rect x="780"
-        y="80"
-        width="35"
-        height="35"
-        rx="5">
-
-    <animate
-        attributeName="y"
-        values="80;210;80"
-        dur="2.5s"
-        repeatCount="indefinite"/>
-
-  </rect>
-
-  <text x="797"
-        y="104"
-        text-anchor="middle"
-        font-family="monospace"
-        font-size="18"
-        fill="#05080d">
-
-    X
-
-  </text>
-
-  <animateTransform
-      attributeName="transform"
-      type="translate"
-      values="0 0;-600 0;0 0"
-      dur="4.5s"
-      repeatCount="indefinite"/>
-
-</g>
-
-
-<!-- ================= BULLETS ================= -->
-
-<g fill="#00ff88">
-
-  <rect x="497"
-        y="180"
-        width="6"
-        height="18">
-
-    <animate
-        attributeName="y"
-        values="180;60;180"
-        dur="1s"
-        repeatCount="indefinite"/>
-
-  </rect>
-
-  <rect x="497"
-        y="180"
-        width="6"
-        height="18">
-
-    <animate
-        attributeName="y"
-        values="180;60;180"
-        dur="1s"
-        begin="0.5s"
-        repeatCount="indefinite"/>
-
-  </rect>
-
-</g>
-
-
-<!-- ================= LIVE STATUS ================= -->
-
-<text x="30"
-      y="275"
-      font-family="monospace"
-      font-size="16"
-      fill="#00ff88">
-
-  THREAT_LEVEL: LOW
-
-  <animate
-      attributeName="opacity"
-      values="1;0.35;1"
-      dur="1.5s"
-      repeatCount="indefinite"/>
-
-</text>
-
-
-<text x="420"
-      y="275"
-      font-family="monospace"
-      font-size="16"
-      fill="#00ff88">
-
-  SYSTEM_SECURE
-
-  <animate
-      attributeName="opacity"
-      values="1;0.45;1"
-      dur="1.8s"
-      repeatCount="indefinite"/>
-
-</text>
-
-
-<!-- ================= PROFILE STATS ================= -->
-
-<!-- VIEWS -->
-
-<g>
-
-<rect x="670"
-      y="55"
-      width="140"
-      height="35"
-      rx="5"
-      fill="#0b1514"
-      stroke="#00ff88"
-      opacity="0.9"/>
-
-<text x="740"
-      y="77"
-      text-anchor="middle"
-      font-family="monospace"
-      font-size="13"
-      fill="#00ff88">
-
-  ◉ VIEWS  •  LIVE
-
-</text>
-
-<animate
-    attributeName="opacity"
-    values="1;0.45;1"
-    dur="2s"
-    repeatCount="indefinite"/>
-
-</g>
-
-
-<!-- FOLLOWERS -->
-
-<g>
-
-<rect x="670"
-      y="100"
-      width="140"
-      height="35"
-      rx="5"
-      fill="#0b1514"
-      stroke="#00ff88"/>
-
-<text x="740"
-      y="122"
-      text-anchor="middle"
-      font-family="monospace"
-      font-size="13"
-      fill="#00ff88">
-
-  ♟ FOLLOWERS
-
-</text>
-
-<animateTransform
-    attributeName="transform"
-    type="translate"
-    values="0 0;0 -3;0 0"
-    dur="2s"
-    repeatCount="indefinite"/>
-
-</g>
-
-
-<!-- STARS -->
-
-<g>
-
-<rect x="670"
-      y="145"
-      width="140"
-      height="35"
-      rx="5"
-      fill="#0b1514"
-      stroke="#00ff88"/>
-
-<text x="740"
-      y="167"
-      text-anchor="middle"
-      font-family="monospace"
-      font-size="13"
-      fill="#00ff88">
-
-  ★ STARS
-
-</text>
-
-<animate
-    attributeName="opacity"
-    values="1;0.4;1"
-    dur="1.7s"
-    repeatCount="indefinite"/>
-
-</g>
-
-
-<!-- ================= SCAN LINE ================= -->
-
-<rect x="0"
-      y="0"
-      width="1000"
-      height="2"
-      fill="#00ff88"
-      opacity="0.55">
-
-  <animate
-      attributeName="y"
-      values="0;300;0"
-      dur="3s"
-      repeatCount="indefinite"/>
-
-</rect>
-
-
-<!-- ================= RADAR ================= -->
-
-<circle cx="90"
-        cy="115"
-        r="35"
-        fill="none"
-        stroke="#00ff88"
-        opacity="0.25"/>
-
-<circle cx="90"
-        cy="115"
-        r="25"
-        fill="none"
-        stroke="#00ff88"
-        opacity="0.3"/>
-
-<circle cx="90"
-        cy="115"
-        r="5"
-        fill="#00ff88">
-
-  <animate
-      attributeName="r"
-      values="5;12;5"
-      dur="1.5s"
-      repeatCount="indefinite"/>
-
-</circle>
-
-
-<!-- ================= SIGNAL ================= -->
-
-<text x="40"
-      y="150"
-      font-family="monospace"
-      font-size="11"
-      fill="#00ff88">
-
-  SCANNING...
-
-  <animate
-      attributeName="opacity"
-      values="1;0.2;1"
-      dur="1s"
-      repeatCount="indefinite"/>
-
-</text>
-
-</svg>
+          git push
