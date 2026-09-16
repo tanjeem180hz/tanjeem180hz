@@ -28,9 +28,9 @@ Interested in understanding systems, finding vulnerabilities, and building more 
 ---
 
 <div align="center">
-
-<img src="./cyber-game.svg" width="700" alt="Cyber Defense Game">
-
+  <img src="https://raw.githubusercontent.com/tanjeem_817/tanjeem_817/main/cyber-game.svg"
+       width="700"
+       alt="Cyber Defense Game" />
 </div>
 
 <div align="center">
