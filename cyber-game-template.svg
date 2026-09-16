@@ -1,49 +1,270 @@
-name: Update Cyber Game
+<svg width="1000" height="300" viewBox="0 0 1000 300"
+     xmlns="http://www.w3.org/2000/svg">
 
-on:
-  schedule:
-    - cron: "0 */6 * * *"
-  workflow_dispatch:
+  <!-- BACKGROUND -->
+  <rect width="1000" height="300" fill="#05080d"/>
 
-permissions:
-  contents: write
+  <!-- GRID -->
+  <g opacity="0.22" stroke="#00ff88" stroke-width="1">
+    <path d="M0 50H1000 M0 100H1000 M0 150H1000 M0 200H1000 M0 250H1000"/>
+    <path d="M50 0V300 M100 0V300 M150 0V300 M200 0V300
+             M250 0V300 M300 0V300 M350 0V300 M400 0V300
+             M450 0V300 M500 0V300 M550 0V300 M600 0V300
+             M650 0V300 M700 0V300 M750 0V300 M800 0V300
+             M850 0V300 M900 0V300 M950 0V300"/>
+  </g>
 
-jobs:
-  build-game:
-    runs-on: ubuntu-latest
+  <!-- HEADER -->
+  <text x="500" y="38"
+        text-anchor="middle"
+        font-family="monospace"
+        font-size="22"
+        font-weight="bold"
+        fill="#00ff88">
+    CYBER DEFENSE // ACTIVE
+  </text>
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  <text x="500" y="58"
+        text-anchor="middle"
+        font-family="monospace"
+        font-size="11"
+        fill="#7affc1">
+    THREAT MONITORING SYSTEM
+  </text>
 
-      - name: Get GitHub Stats
-        run: |
-          USERNAME="tanjeem_817"
+  <!-- SYSTEM STATUS -->
+  <g>
+    <rect x="25" y="70"
+          width="175"
+          height="75"
+          rx="8"
+          fill="#08110f"
+          stroke="#00ff88"/>
 
-          FOLLOWERS=$(curl -s "https://api.github.com/users/$USERNAME" | jq -r '.followers // 0')
+    <text x="40" y="92"
+          font-family="monospace"
+          font-size="11"
+          fill="#7affc1">
+      SYSTEM STATUS
+    </text>
 
-          STARS=$(curl -s "https://api.github.com/users/$USERNAME/repos?per_page=100" \
-            | jq '[.[].stargazers_count] | add // 0')
+    <text x="40" y="116"
+          font-family="monospace"
+          font-size="13"
+          font-weight="bold"
+          fill="#00ff88">
+      ● PROTECTED
+    </text>
 
-          echo "FOLLOWERS=$FOLLOWERS" >> $GITHUB_ENV
-          echo "STARS=$STARS" >> $GITHUB_ENV
+    <text x="40" y="136"
+          font-family="monospace"
+          font-size="10"
+          fill="#7affc1">
+      FIREWALL: ACTIVE
+    </text>
 
-      - name: Build SVG
-        run: |
-          cp cyber-game-template.svg cyber-game.svg
+    <animate
+      attributeName="opacity"
+      values="1;0.65;1"
+      dur="2s"
+      repeatCount="indefinite"/>
+  </g>
 
-          sed -i "s/{{FOLLOWERS}}/${FOLLOWERS}/g" cyber-game.svg
-          sed -i "s/{{STARS}}/${STARS}/g" cyber-game.svg
+  <!-- PLAYER -->
+  <g>
+    <polygon points="500,205 468,238 532,238"
+             fill="#00ff88"/>
 
-          sed -i "s/{{VIEWS}}/LIVE/g" cyber-game.svg
+    <rect x="465" y="238"
+          width="70"
+          height="20"
+          rx="5"
+          fill="#00ff88"/>
 
-      - name: Commit Changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    <circle cx="500" cy="230"
+            r="5"
+            fill="#05080d"/>
 
-          git add cyber-game.svg
+    <animateTransform
+      attributeName="transform"
+      type="translate"
+      values="0 0;45 0;-45 0;0 0"
+      dur="4s"
+      repeatCount="indefinite"/>
+  </g>
 
-          git diff --cached --quiet || git commit -m "Update cyber game stats"
+  <!-- ENEMY 1 -->
+  <g>
+    <rect x="140" y="70"
+          width="38"
+          height="38"
+          rx="6"
+          fill="#ff3158"/>
 
-          git push
+    <text x="159" y="96"
+          text-anchor="middle"
+          font-family="monospace"
+          font-size="20"
+          font-weight="bold"
+          fill="#05080d">
+      X
+    </text>
+
+    <animateTransform
+      attributeName="transform"
+      type="translate"
+      values="0 0;650 0;0 0"
+      dur="5s"
+      repeatCount="indefinite"/>
+
+    <animateTransform
+      attributeName="transform"
+      type="translate"
+      values="0 0;0 120;0 0"
+      dur="3s"
+      repeatCount="indefinite"
+      additive="sum"/>
+  </g>
+
+  <!-- ENEMY 2 -->
+  <g>
+    <rect x="800" y="85"
+          width="38"
+          height="38"
+          rx="6"
+          fill="#ff3158"/>
+
+    <text x="819" y="111"
+          text-anchor="middle"
+          font-family="monospace"
+          font-size="20"
+          font-weight="bold"
+          fill="#05080d">
+      X
+    </text>
+
+    <animateTransform
+      attributeName="transform"
+      type="translate"
+      values="0 0;-620 0;0 0"
+      dur="4.5s"
+      repeatCount="indefinite"/>
+
+    <animateTransform
+      attributeName="transform"
+      type="translate"
+      values="0 0;0 110;0 0"
+      dur="2.7s"
+      repeatCount="indefinite"
+      additive="sum"/>
+  </g>
+
+  <!-- ENEMY 3 -->
+  <g>
+    <rect x="420" y="75"
+          width="32"
+          height="32"
+          rx="5"
+          fill="#ff3158"/>
+
+    <text x="436" y="98"
+          text-anchor="middle"
+          font-family="monospace"
+          font-size="17"
+          font-weight="bold"
+          fill="#05080d">
+      X
+    </text>
+
+    <animateTransform
+      attributeName="transform"
+      type="translate"
+      values="0 0;300 70;-300 0;0 0"
+      dur="6s"
+      repeatCount="indefinite"/>
+  </g>
+
+  <!-- BULLET 1 -->
+  <rect x="497" y="180"
+        width="6"
+        height="18"
+        rx="2"
+        fill="#00ff88">
+
+    <animate
+      attributeName="y"
+      values="180;65;180"
+      dur="1.2s"
+      repeatCount="indefinite"/>
+
+  </rect>
+
+  <!-- BULLET 2 -->
+  <rect x="497" y="180"
+        width="6"
+        height="18"
+        rx="2"
+        fill="#00ff88">
+
+    <animate
+      attributeName="y"
+      values="180;65;180"
+      dur="1.2s"
+      begin="0.6s"
+      repeatCount="indefinite"/>
+
+  </rect>
+
+  <!-- THREAT LEVEL -->
+  <text x="30" y="275"
+        font-family="monospace"
+        font-size="15"
+        font-weight="bold"
+        fill="#00ff88">
+
+    THREAT_LEVEL: LOW
+
+    <animate
+      attributeName="opacity"
+      values="1;0.35;1"
+      dur="1.5s"
+      repeatCount="indefinite"/>
+
+  </text>
+
+  <!-- SECURITY STATUS -->
+  <text x="970" y="275"
+        text-anchor="end"
+        font-family="monospace"
+        font-size="15"
+        font-weight="bold"
+        fill="#00ff88">
+    SYSTEM_SECURE
+  </text>
+
+  <!-- SCAN LINE -->
+  <rect x="0" y="0"
+        width="1000"
+        height="2"
+        fill="#00ff88"
+        opacity="0.5">
+
+    <animate
+      attributeName="y"
+      values="0;300;0"
+      dur="3s"
+      repeatCount="indefinite"/>
+
+  </rect>
+
+  <!-- BORDER -->
+  <rect x="2" y="2"
+        width="996"
+        height="296"
+        rx="5"
+        fill="none"
+        stroke="#00ff88"
+        stroke-width="1"
+        opacity="0.5"/>
+
+</svg>
