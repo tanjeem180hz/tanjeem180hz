@@ -55,17 +55,3 @@ Interested in understanding systems, finding vulnerabilities, and building more 
 
 </div>
 
-
-<div align="center">
-
-<a href="https://github.com/tanjeem_817">
-  <img src="https://img.shields.io/github/followers/tanjeem_817?style=for-the-badge&logo=github&label=FOLLOWERS&color=00ff88" />
-</a>
-
-<a href="https://github.com/tanjeem_817?tab=repositories">
-  <img src="https://img.shields.io/github/stars/tanjeem_817?style=for-the-badge&logo=github&label=STARS&color=00ff88" />
-</a>
-
-<img src="https://komarev.com/ghpvc/?username=tanjeem_817&label=PROFILE%20VIEWS&color=00ff88&style=for-the-badge" />
-
-</div>
