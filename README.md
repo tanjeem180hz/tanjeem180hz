@@ -21,7 +21,7 @@ Interested in understanding systems, identifying vulnerabilities, and building s
 
 <div align="center">
 
-<img src="https://skillicons.dev/icons?i=c,cpp,java,python,javascript,typescript,php,html,css,bash,mysql&perline=11" />
+<img src="https://skillicons.dev/icons?i=c,cpp,java,python,html,css&perline=11" />
 
 </div>
 
